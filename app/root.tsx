@@ -41,8 +41,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function HydrateFallback() {
+  return (
+    <div>
+      <p> Loading </p>
+    </div>
+  )
+}
+
 export default function App() {
-  return <Outlet />;
+  return (
+    <div>
+      <Outlet />
+    </div>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
