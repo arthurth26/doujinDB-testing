@@ -49,8 +49,6 @@ const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
       const newTag = e.target.value;
       setTag(newTag)
     }
-
-    
     
     return (
           <div id="searchBar" className='flex items-center justify-between w-180 h-15 p-3 bg-gray-700 rounded-full '>
