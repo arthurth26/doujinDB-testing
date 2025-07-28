@@ -5,20 +5,20 @@ interface timeOfM3 {
     setYearAndSeason: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const timeOfM3Context = React.createContext<timeOfM3|undefined>(undefined);
+const TimeOfM3Context = React.createContext<timeOfM3|undefined>(undefined);
 
-export const timeOfM3Provider: React.FC<{children: React.ReactNode}> = ({children}) => {
+export const TimeOfM3Provider: React.FC<{children: React.ReactNode}> = ({children}) => {
     const [yearAndSeason, setYearAndSeason] = React.useState<string>('');
 
     return (
-        <timeOfM3Context.Provider value={{yearAndSeason, setYearAndSeason}}>
+        <TimeOfM3Context.Provider value={{yearAndSeason, setYearAndSeason}}>
             {children}
-        </timeOfM3Context.Provider>
+        </TimeOfM3Context.Provider>
     )
 }
 
 export function useYearAndSeason(): timeOfM3 {
-    const context = React.useContext(timeOfM3Context);
+    const context = React.useContext(TimeOfM3Context);
 
     if (!context) {
         throw new Error('This should only be used within a dropdown list')
