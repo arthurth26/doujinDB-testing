@@ -2,16 +2,19 @@ import React from 'react';
 
 interface timeOfM3 {
     yearAndSeason: string;
-    setYearAndSeason: React.Dispatch<React.SetStateAction<string>>;
+    setYearAndSeason: React.Dispatch<React.SetStateAction<string>>
+    yearAndSeasonOptions: string[];
 }
 
 const TimeOfM3Context = React.createContext<timeOfM3|undefined>(undefined);
 
+const yearAndSeasonOptions = ['2025 Spring', '2024 Fall', '2024 Spring', '2023 Fall'];
+
 export const TimeOfM3Provider: React.FC<{children: React.ReactNode}> = ({children}) => {
-    const [yearAndSeason, setYearAndSeason] = React.useState<string>('');
+    const [yearAndSeason, setYearAndSeason] = React.useState<string>(yearAndSeasonOptions[0].replace(" ","").toLowerCase().slice(0,5));
 
     return (
-        <TimeOfM3Context.Provider value={{yearAndSeason, setYearAndSeason}}>
+        <TimeOfM3Context.Provider value={{yearAndSeason, setYearAndSeason, yearAndSeasonOptions}}>
             {children}
         </TimeOfM3Context.Provider>
     )

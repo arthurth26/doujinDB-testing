@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import {Content} from "../content/content";
+import {ContentList} from "../content/content";
 import Navbar from "~/navbar/navbar";
 import { SearchProvider } from "~/content/searchContext";
 import {TimeOfM3Provider} from "~/content/timeOfM3Conext";
@@ -11,15 +11,13 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-
-
 export default function Home() {
   return (
     <div>
       <SearchProvider>
         <TimeOfM3Provider>
           <Navbar/>
-          <Content/>  
+          <ContentList/>  
         </TimeOfM3Provider>
       </SearchProvider>
     </div>
