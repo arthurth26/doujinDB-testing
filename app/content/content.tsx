@@ -155,7 +155,7 @@ export const CircleContent = React.memo(function CircleContent({circle, yearAndS
                                 {circle.links && Object.values(circle.links).map((link, index) => { 
                                     {if (link.url.includes('youtube.com')) { return (
                                         <li key={index} className="w-full rounded bg-gray-600 hover:bg-gray-300 p-1">
-                                            <a href={link.url} className="cursor-pointer">
+                                            <a href={link.url} className="cursor-pointer" target="_blank" rel="noopener noreferrer">
                                                 <div className="flex flex-row gap-3 items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 48 48">
                                                         <path fill="#FF3D00" d="M43.2,33.9c-0.4,2.1-2.1,3.7-4.2,4c-3.3,0.5-8.8,1.1-15,1.1c-6.1,0-11.6-0.6-15-1.1c-2.1-0.3-3.8-1.9-4.2-4C4.4,31.6,4,28.2,4,24c0-4.2,0.4-7.6,0.8-9.9c0.4-2.1,2.1-3.7,4.2-4C12.3,9.6,17.8,9,24,9c6.2,0,11.6,0.6,15,1.1c2.1,0.3,3.8,1.9,4.2,4c0.4,2.3,0.9,5.7,0.9,9.9C44,28.2,43.6,31.6,43.2,33.9z"></path><path fill="#FFF" d="M20 31L20 17 32 24z"></path>
@@ -168,7 +168,7 @@ export const CircleContent = React.memo(function CircleContent({circle, yearAndS
                                     else if (link.url.includes('twitter.com') || link.url.includes('x.com')) {
                                         return (
                                         <li key={index} className="w-full rounded bg-gray-600 hover:bg-gray-300 p-1">
-                                            <a href={link.url} className="cursor-pointer">
+                                            <a href={link.url} className="cursor-pointer" target="_blank" rel="noopener noreferrer">
                                                 <div className="flex flex-row gap-3 items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 50 50">
                                                     <path d="M 11 4 C 7.134 4 4 7.134 4 11 L 4 39 C 4 42.866 7.134 46 11 46 L 39 46 C 42.866 46 46 42.866 46 39 L 46 11 C 46 7.134 42.866 4 39 4 L 11 4 z M 13.085938 13 L 21.023438 13 L 26.660156 21.009766 L 33.5 13 L 36 13 L 27.789062 22.613281 L 37.914062 37 L 29.978516 37 L 23.4375 27.707031 L 15.5 37 L 13 37 L 22.308594 26.103516 L 13.085938 13 z M 16.914062 15 L 31.021484 35 L 34.085938 35 L 19.978516 15 L 16.914062 15 z"></path>
@@ -182,7 +182,7 @@ export const CircleContent = React.memo(function CircleContent({circle, yearAndS
                                     else if (link.url.includes('instagram')) {
                                         return (
                                         <li key={index} className="w-full rounded bg-gray-600 hover:bg-gray-300 p-1">
-                                            <a href={link.url} className="cursor-pointer">
+                                            <a href={link.url} className="cursor-pointer" target="_blank" rel="noopener noreferrer">
                                                 <div className="flex flex-row gap-3 items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 48 48">
                                                         <radialGradient id="yOrnnhliCrdS2gy~4tD8ma_Xy10Jcu1L2Su_gr1" cx="19.38" cy="42.035" r="44.899" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor="#fd5"></stop><stop offset=".328" stopColor="#ff543f"></stop><stop offset=".348" stopColor="#fc5245"></stop><stop offset=".504" stopColor="#e64771"></stop><stop offset=".643" stopColor="#d53e91"></stop><stop offset=".761" stopColor="#cc39a4"></stop><stop offset=".841" stopColor="#c837ab"></stop></radialGradient><path fill="url(#yOrnnhliCrdS2gy~4tD8ma_Xy10Jcu1L2Su_gr1)" d="M34.017,41.99l-20,0.019c-4.4,0.004-8.003-3.592-8.008-7.992l-0.019-20	c-0.004-4.4,3.592-8.003,7.992-8.008l20-0.019c4.4-0.004,8.003,3.592,8.008,7.992l0.019,20	C42.014,38.383,38.417,41.986,34.017,41.99z"></path><radialGradient id="yOrnnhliCrdS2gy~4tD8mb_Xy10Jcu1L2Su_gr2" cx="11.786" cy="5.54" r="29.813" gradientTransform="matrix(1 0 0 .6663 0 1.849)" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor="#4168c9"></stop><stop offset=".999" stopColor="#4168c9" stopOpacity="0"></stop></radialGradient><path fill="url(#yOrnnhliCrdS2gy~4tD8mb_Xy10Jcu1L2Su_gr2)" d="M34.017,41.99l-20,0.019c-4.4,0.004-8.003-3.592-8.008-7.992l-0.019-20	c-0.004-4.4,3.592-8.003,7.992-8.008l20-0.019c4.4-0.004,8.003,3.592,8.008,7.992l0.019,20	C42.014,38.383,38.417,41.986,34.017,41.99z"></path><path fill="#fff" d="M24,31c-3.859,0-7-3.14-7-7s3.141-7,7-7s7,3.14,7,7S27.859,31,24,31z M24,19c-2.757,0-5,2.243-5,5	s2.243,5,5,5s5-2.243,5-5S26.757,19,24,19z"></path><circle cx="31.5" cy="16.5" r="1.5" fill="#fff"></circle><path fill="#fff" d="M30,37H18c-3.859,0-7-3.14-7-7V18c0-3.86,3.141-7,7-7h12c3.859,0,7,3.14,7,7v12	C37,33.86,33.859,37,30,37z M18,13c-2.757,0-5,2.243-5,5v12c0,2.757,2.243,5,5,5h12c2.757,0,5-2.243,5-5V18c0-2.757-2.243-5-5-5H18z"></path>
@@ -195,7 +195,7 @@ export const CircleContent = React.memo(function CircleContent({circle, yearAndS
                                     else if (link.url.includes('soundcloud.com')) {
                                         return (
                                         <li key={index} className="w-full rounded bg-gray-600 hover:bg-gray-300 p-1">
-                                            <a href={link.url} className="cursor-pointer">
+                                            <a href={link.url} className="cursor-pointer" target="_blank" rel="noopener noreferrer">
                                                 <div className="flex flex-row gap-3 items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 50 50">
                                                         <path d="M 30 11 C 26.398438 11 23 12.789063 21 15.6875 L 21 19.1875 L 21.3125 19.40625 L 21.6875 18.40625 C 23.085938 15.105469 26.40625 13 29.90625 13 C 34.90625 13 38.90625 17 38.90625 22 L 38.90625 24 L 40.40625 23.40625 C 41.105469 23.105469 41.800781 23 42.5 23 C 45.5 23 48 25.5 48 28.5 C 48 31.5 45.5 34 42.5 34 L 21 34 L 21 36 L 42.5 36 C 46.601563 36 50 32.601563 50 28.5 C 50 24.398438 46.601563 21 42.5 21 C 42 21 41.5 21.085938 41 21.1875 C 40.5 15.488281 35.800781 11 30 11 Z M 17 16 C 16.300781 16 15.601563 16.085938 15 16.1875 L 15 36 L 17 36 Z M 18 16 L 18 36 L 20 36 L 20 16.5 C 19.398438 16.300781 18.699219 16.101563 18 16 Z M 14 16.5 C 13.300781 16.800781 12.601563 17.101563 12 17.5 L 12 36 L 14 36 Z M 11 18.3125 C 10.199219 19.011719 9.5 19.90625 9 20.90625 L 9 36 L 11 36 Z M 6.5 22 C 6.324219 22.011719 6.148438 22.042969 6 22.09375 L 6 35.90625 C 6.300781 36.007813 6.699219 36 7 36 L 8 36 L 8 22.09375 C 7.699219 21.992188 7.300781 22 7 22 C 6.851563 22 6.675781 21.988281 6.5 22 Z M 5 22.3125 C 4.300781 22.511719 3.601563 22.8125 3 23.3125 L 3 34.6875 C 3.601563 35.085938 4.300781 35.488281 5 35.6875 Z M 2 24.09375 C 0.800781 25.394531 0 27.101563 0 29 C 0 30.898438 0.800781 32.605469 2 33.90625 Z"></path>
@@ -206,7 +206,7 @@ export const CircleContent = React.memo(function CircleContent({circle, yearAndS
                                         </li>)
                                     } else (
                                     <li key={index} className="w-full rounded bg-gray-600 hover:bg-gray-300 p-1">
-                                        <a href={link.url} className="cursor-pointer">
+                                        <a href={link.url} className="cursor-pointer" target="_blank" rel="noopener noreferrer">
                                             <div className="flex flex-row items-center">
                                                 <svg className="w-6 h-6 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M4.37 7.657c2.063.528 2.396 2.806 3.202 3.87 1.07 1.413 2.075 1.228 3.192 2.644 1.805 2.289 1.312 5.705 1.312 6.705M20 15h-1a4 4 0 0 0-4 4v1M8.587 3.992c0 .822.112 1.886 1.515 2.58 1.402.693 2.918.351 2.918 2.334 0 .276 0 2.008 1.972 2.008 2.026.031 2.026-1.678 2.026-2.008 0-.65.527-.9 1.177-.9H20M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
