@@ -220,7 +220,7 @@ export const CircleContent = React.memo(function CircleContent({circle, yearAndS
                             </ul>
                         </div>
                         <div id="dropdownContainer">
-                            <button id="dropdown button" onClick={toggleDropDown} className="flex justify-between items-between text-gray-200 px-4 py-2 hover:bg-gray-500">
+                            <button id="dropdown button" onClick={toggleDropDown} className="flex justify-between items-between text-gray-200 px-4 py-2">
                                 <svg
                                     className="ml-2 h-5 w-5"
                                     xmlns="http://www.w3.org/2000/svg"
