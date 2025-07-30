@@ -278,12 +278,12 @@ export function ContentList() {
             {displayedCircles.length < filteredCircles.length && (
                 <div ref={observerRef} className="h-10"/>
             )}
-            {displayedCircles.length === filteredCircles.length && filteredCircles.length > 0 && (
+            {!isLoading && displayedCircles.length === filteredCircles.length && filteredCircles.length > 0 && (
                 <div className="text-center py-4">
                     <span>No more circles to load</span>
                 </div>
             )}
-            {searchTerm.length > 0 && filteredCircles.length === 0 && (
+            {!isLoading && searchTerm.length > 0 && filteredCircles.length === 0 && (
                 <div className="text-center py-4">
                     <span>No results found for "{searchTerm}"</span>
                 </div>
