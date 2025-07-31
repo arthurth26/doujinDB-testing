@@ -300,7 +300,7 @@ export function ContentList() {
         if (!searchTerm) return circles;
 
         let filtered: circleData[];
-        const lowerSearchTerm = searchTerm.toLowerCase();
+        const lowerSearchTerm = searchTerm.toLowerCase().trimEnd();
         if (category === 'Name') {
             filtered = circles.filter((circle) => {
                 const nameMatch = circle.name.toLowerCase().includes(lowerSearchTerm)
