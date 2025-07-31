@@ -301,30 +301,39 @@ export function ContentList() {
 
         let filtered: circleData[];
         const lowerSearchTerm = searchTerm.toLowerCase();
-        if (category === 'name') {
+        if (category === 'Name') {
             filtered = circles.filter((circle) => {
                 const nameMatch = circle.name.toLowerCase().includes(lowerSearchTerm)
                 return nameMatch
             })
         }
-        else if (category === 'tag') {
+        else if (category === 'Tag') {
             filtered = circles.filter((circle) => {
                 const tagMatch = circle.keywords.some((keyword) => keyword.text.toLowerCase().includes(lowerSearchTerm) || keyword.phonetic.toLowerCase().includes(lowerSearchTerm));
                 return tagMatch
             })
         }
-        else if (category === 'id') {
+        else if (category === 'Description') { 
+            filtered = circles.filter((circle) => { 
+                const descriptionMatch = circle.prText.toLocaleLowerCase().includes(lowerSearchTerm);
+                return descriptionMatch 
+            })
+            
+        }
+        else if (category === 'ID') {
             filtered = circles.filter((circle) => {
                 const idMatch = circle.id.toString().includes(lowerSearchTerm);
                 return idMatch;
             })
         }
+
         else {
             filtered = circles.filter((circle) => {
                 const nameMatch = circle.name.toLowerCase().includes(lowerSearchTerm)
                 const tagMatch = circle.keywords.some((keyword) => keyword.text.toLowerCase().includes(lowerSearchTerm) || keyword.phonetic.toLowerCase().includes(lowerSearchTerm));
+                const descriptionMatch = circle.prText.toLocaleLowerCase().includes(lowerSearchTerm);
                 const idMatch = circle.id.toString().includes(lowerSearchTerm);
-                return nameMatch|| tagMatch || idMatch;
+                return nameMatch|| tagMatch || descriptionMatch ||idMatch ;
             })
         }
 
