@@ -26,7 +26,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 export function useSearch(): SearchContextType {
     const searchcontext = React.useContext(SearchContext);
 
-
     if (!searchcontext) {
         throw new Error('useSearch must be used within a SearchProvider');
     }
