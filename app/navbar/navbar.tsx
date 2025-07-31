@@ -44,15 +44,10 @@ const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
 
       setSearchTerm(newSearchTerm)
     }
-
-    const handleTagChange = (e: React.ChangeEvent<HTMLButtonElement>) =>{
-      const newTag = e.target.value;
-      setTag(newTag)
-    }
     
     return (
           <div id="searchBar" className='flex items-center justify-between w-180 h-15 p-3 bg-gray-700 rounded-full '>
-            <input placeholder='Search...' onChange={handleSearchChange} value={searchTerm} className='bg-transparent text-gray-200 placeholder-gray-400 outline-none px-4 py-1 w-150'/>
+            <input placeholder='Search...' onChange={handleSearchChange} value={searchTerm.trim()} className='bg-transparent text-gray-200 placeholder-gray-400 outline-none px-4 py-1 w-150'/>
           <div id="dropdown" className="relative flex-none" ref={searchDropDownRef}>
               <button id="dropdown button" onClick={toggleSearchDropDown} className="flex justify-between items-between w-48 h-10 text-gray-200 bg-gray-600 px-4 py-2 rounded-full hover:bg-gray-500"> 
                 {searchTag || categoryOptions[0]}
