@@ -8,7 +8,7 @@ interface timeOfM3 {
 
 const TimeOfM3Context = React.createContext<timeOfM3|undefined>(undefined);
 
-const yearAndSeasonOptions = ['2025 Spring', '2024 Fall', '2024 Spring', '2023 Fall'];
+const yearAndSeasonOptions = ['2025 Spring', '2024 Fall', '2024 Spring', '2023 Fall', '2023 Spring'];
 
 export const TimeOfM3Provider: React.FC<{children: React.ReactNode}> = ({children}) => {
     const [yearAndSeason, setYearAndSeason] = React.useState<string>(yearAndSeasonOptions[0].replace(" ","").toLowerCase().slice(0,5));

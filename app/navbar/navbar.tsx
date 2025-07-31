@@ -150,7 +150,7 @@ export default function Navbar() {
   const {searchTerm, setSearchTerm, category, setCategory} = useSearch()
 
   return (
-    <div id="container" className='flex items-center justify-between p-4 h-20 w-full bg-gray-800 fixed z-10'>
+    <div id="container" className='flex items-center justify-between p-4 h-20 w-full bg-blue-900 fixed z-10'>
       <TimeDropDownList />
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} tag={category} setTag={setCategory}/>
       <div id="discovery" className='flex'>

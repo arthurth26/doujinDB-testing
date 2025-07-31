@@ -21,5 +21,5 @@ export default function Home() {
         </TimeOfM3Provider>
       </SearchProvider>
     </div>
-);
+  );
 }
