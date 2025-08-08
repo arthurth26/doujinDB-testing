@@ -4,6 +4,7 @@ import Navbar from "~/navbar/navbar";
 import { SearchProvider } from "~/content/searchContext";
 import { TimeOfM3Provider } from "~/content/timeOfM3Conext";
 import { IsModalOpenProvider } from "~/content/modalContext";
+import { TagsProvider } from "~/content/discovery";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,8 +19,10 @@ export default function Home() {
       <SearchProvider>
         <TimeOfM3Provider>
           <IsModalOpenProvider>
-            <Navbar/>
-            <ContentList/>  
+            <TagsProvider>
+              <Navbar/>
+              <ContentList/>  
+            </TagsProvider>
           </IsModalOpenProvider>
         </TimeOfM3Provider>
       </SearchProvider>

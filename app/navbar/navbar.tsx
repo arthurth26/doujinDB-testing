@@ -89,7 +89,7 @@ const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
 
 const TimeDropDownList = () => {
   const isMobile = window.innerWidth < 1500;
-  const { yearAndSeason, setYearAndSeason, yearAndSeasonOptions } = useYearAndSeason();
+  const { setYearAndSeason, yearAndSeasonOptions } = useYearAndSeason();
   const [yearAndSeasonListOpen, setYearAndSeasonListOpen] = React.useState<boolean>(false);
   const [yearAndSeasonSetting, setYearAndSeasonSetting] = React.useState<string>(yearAndSeasonOptions[0]);
 
@@ -224,7 +224,7 @@ export default function Navbar() {
             {isMobile? '': <span className='pl-2'>Discovery</span>}
         </button>
         <Modal isMobile={isMobile} isOpen={isModalOpen} isClose={closeModal} >
-            <Discovery/>
+            <Discovery isMobile={isMobile}/>
           <div>
             <p>wtuffejfaowjfaewoijf</p>
           </div>

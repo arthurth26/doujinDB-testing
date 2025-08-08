@@ -20,7 +20,12 @@ interface tagCategories {
 }
 
 interface tagsContext {
-
+    selectedTags: string[];
+    setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>;
+    selectedYearAndSeasonOption: string[];
+    setselectedYearAndSeasonOption: React.Dispatch<React.SetStateAction<string[]>>;
+    customTags: string[];
+    setCustomTags: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 async function fetchTags (): Promise<tagLib> {
@@ -37,6 +42,29 @@ async function fetchTags (): Promise<tagLib> {
     }
 }
 
+const tagsContext = React.createContext<tagsContext | undefined>(undefined);
+
+export const TagsProvider: React.FC<{children:React.ReactNode}> = ({children}) => {
+    const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+    const [selectedYearAndSeasonOption, setselectedYearAndSeasonOption] = React.useState<string[]>([]);
+    const [customTags, setCustomTags] = React.useState<string[]>([]);
+
+    return (
+        <tagsContext.Provider value={{selectedTags,setSelectedTags, selectedYearAndSeasonOption, setselectedYearAndSeasonOption, customTags, setCustomTags}}>
+            {children}
+        </tagsContext.Provider>
+    );
+}
+
+export function useTags(): tagsContext {
+    const tagsContexts = React.useContext(tagsContext);
+
+    if (!tagsContexts) {
+        throw new Error('Wrong place to use useTags')
+    };
+    return tagsContexts;
+}
+
 const tagC:tagCategories = {
     'Genres': ['Rock', 'R&B', 'Metal', 'Progressive', 'lofi', 'Pop', 'Electronic', 'Hi-Tech', 'Techno', 'Dub', 'Funk', 'Harcore', 'BreakCore', 'SpeedCore', 'Other Cores' ],
     'Vocals': ['Synthesizer V', 'Male', 'Female', 'Vocaloid', 'Synthsized voice', 'UTAU'],
@@ -45,13 +73,10 @@ const tagC:tagCategories = {
     'Themes': ['Adventure', 'Melancholy', 'Healing', 'Story', 'Romentic', 'Dark', 'Gothic', 'Nostalgic','RPG','Battle','Love', 'Rave','Scary','Boy','Girl', 'Dance']
 }
 
-export function Discovery() {
+export function Discovery( {isMobile}:{isMobile:boolean}) {
     const { yearAndSeasonOptions } = useYearAndSeason();
-    const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+    const { selectedTags, setSelectedTags, selectedYearAndSeasonOption, setselectedYearAndSeasonOption, customTags, setCustomTags} = useTags();
     const [isChecked,setIsChecked] = React.useState<boolean>(false)
-    const [selectedYearAndSeasonOption, setselectedYearAndSeasonOption] = React.useState<string[]>([]);
-    const [tagInput, setTagInput] = React.useState<string>('')
-    const isMobile = window.innerWidth < 1024
     const category = Object.keys(tagC)
     const TagInCategory = Object.values(tagC)
 
@@ -86,9 +111,9 @@ export function Discovery() {
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setTagInput(value);
-        if (value.trim() !== '') {
+        const value = e.target.value.split(',');
+        setCustomTags(value);
+        if (value.length !== 0) {
             setIsChecked(true)
         } else {
             setIsChecked(false)
@@ -164,7 +189,7 @@ export function Discovery() {
                 <label>
                     <span className="p-2">Custom Tags?</span>
                     <input type="checkbox" id="custom-tags-checkbox" checked={isChecked} onChange={handleCheckboxChange}/>
-                    <input placeholder="e.g. harcore, rock (separate multiple tags by comma)" className="text-sm p-2 m-2 border rounded-sm w-95/100" onChange={handleInputChange} value={tagInput}/>
+                    <input placeholder="e.g. harcore, rock (separate multiple tags by comma)" className="text-sm p-2 m-2 border rounded-sm w-95/100" onChange={handleInputChange} value={customTags}/>
                 </label>
             </div>
         </div>
