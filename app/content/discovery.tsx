@@ -133,7 +133,7 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                             onChange={(e)=>handleYandSOnCheck(option,e.target.checked)}
                             className="hidden"
                             />
-                            <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedYearAndSeasonOption.includes(option)? ' bg-gray-300 text-gray-700':'bg-gray-800 border hover:bg-gray-500 text-gray-200'}`}>
+                            <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedYearAndSeasonOption.includes(option)? 'border bg-gray-300 text-gray-700':'border bg-gray-800  hover:bg-gray-500 text-gray-200'}`}>
                                 {option}
                             </span>
                         </label>
@@ -147,14 +147,14 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                     </div>
                     <div className="">
                         {TagInCategory[index].sort().map((t:string,i:number) => (
-                            <label key={i} className="inline-flex items-center cursor-pointer">
+                            <label key={i} className="inline-flex items-center cursor-pointer p-1 pl-0">
                                 <input
                                 type="checkbox"
                                 checked={selectedTags.includes(t)}
                                 onChange={(e) => handleTagOnCheck(t,e.target.checked)}
                                 className='hidden'
                                 />
-                                <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes(t)? ' bg-gray-300 text-gray-700':'bg-gray-800 border hover:bg-gray-500 text-gray-200'}`}>{t}</span>
+                                <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes(t)? 'border bg-gray-300 text-gray-700':'bg-gray-800 border hover:bg-gray-500 text-gray-200'}`}>{t}</span>
                             </label>
                         ))}
                     </div>
@@ -164,24 +164,24 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                 <div>
                     <h3 className="border-b">Unique</h3>
                 </div>
-                <div>
-                    <label className="inline-flex items-center cursor-pointer">
+                <div className="">
+                    <label className="inline-flex items-center cursor-pointer p-1 pl-0">
                         <input
                         type="checkbox"
                         checked={selectedTags.includes('Original')}
                         onChange={(e) => handleTagOnCheck('Original',e.target.checked)}
                         className='hidden'
                         />
-                        <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes('Original')? ' bg-gray-300 text-gray-700':'bg-gray-800 border hover:bg-gray-500 text-gray-200'}`}>Original</span>
+                        <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes('Original')? 'border bg-gray-300 text-gray-700':'border bg-gray-800 hover:bg-gray-500 text-gray-200'}`}>Original</span>
                     </label>
-                    <label className="inline-flex items-center cursor-pointer">
+                    <label className="inline-flex items-center cursor-pointer p-1 pl-0">
                         <input
                         type="checkbox"
                         checked={selectedTags.includes('First time')}
                         onChange={(e) => handleTagOnCheck('First time',e.target.checked)}
                         className='hidden'
                         />
-                        <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes('First time')? ' bg-gray-300 text-gray-700':'bg-gray-800 border hover:bg-gray-500 text-gray-200'}`}>First time</span>
+                        <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes('First time')? 'border bg-gray-300 text-gray-700':'border bg-gray-800  hover:bg-gray-500 text-gray-200'}`}>First time</span>
                     </label>
                 </div>
             </div>

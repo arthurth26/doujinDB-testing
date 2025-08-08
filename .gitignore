@@ -4,7 +4,6 @@
 # React Router
 /.react-router/
 /build/
-/public/extract_data.tsx
 /public/tags.csv
 
 /discovery-discover-find-investigate-svgrepo-com.svg

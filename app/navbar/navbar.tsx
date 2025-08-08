@@ -172,12 +172,12 @@ const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, children }) =>
 
   if (isMobile) {  
     return (
-      <div className="flex flex-col fixed inset-5 z-50 items-center justify-center text-sm overflow-auto bg-white" ref={ModalRef}>
-        <div className="flex bg-white">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className='hover:bg-gray-500'>
+      <div className="flex flex-col fixed inset-5 z-50 text-sm overflow-auto bg-white" ref={ModalRef}>
+        <div className="justify-start ml-2 mb-1 mt-1 bg-white">
+            {/* <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className='hover:bg-gray-500'>
               <path d="M15 18L9 12L15 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          <button className='text-sm hover:cursor-pointer hover:text-gray-800 hover:bg-gray-500' onClick={isClose}>X</button>  
+            </svg> */}
+          <button className='text-sm hover:cursor-pointer text-gray-800 hover:text-gray-800 hover:bg-gray-500' onClick={isClose}>X</button>  
         </div>
         {children}
       </div>  

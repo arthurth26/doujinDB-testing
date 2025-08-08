@@ -53,6 +53,16 @@ const circlePlaceholder:circleData = {
     number: 'placeholder',
 }
 
+interface tagDetails {
+    jpTag: string
+    enTag: string
+    category: string    
+}
+
+interface tagLib {
+    tags: tagDetails[]
+}
+
 async function fetchCircleData({ name }: { name: string }): Promise<listCircleData> {
     try {
         const response = await fetch(`/${name}_circles.json`);
@@ -325,7 +335,6 @@ export const CircleContent = function CircleContent({circle, yearAndSeason}: {ci
         )
     }
 
-
 export function ContentList() {
     const [circles, setCircles] = React.useState<circleData[]>([circlePlaceholder])
     const [displayedCircles, setDisplayedCircles] = React.useState<circleData[]>([]);
@@ -455,3 +464,49 @@ export function ContentList() {
         </div>
     )
 }
+
+function testingTags() {
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [circles, setCircles] = React.useState<circleData[]>([circlePlaceholder]);
+    const [tagLib, setTagLib] = React.useState<tagLib>({'tags':[]});
+    const {yearAndSeason} = useYearAndSeason(); 
+    const tagCache = React.useRef<tagLib>({'tags':[]})
+    const cache = React.useRef<Map<string, listCircleData>>((new Map())); 
+    const tagJSONLocation = './tagLib.json'
+
+    React.useEffect(() => {
+        const fix_YandS = yearAndSeason.replace(" ","").slice(0,5).toLowerCase();
+        const loadCircles = async () => {
+            if (cache.current.has(fix_YandS)) {
+                setCircles(cache.current.get(fix_YandS)!.items)
+                return;
+            }
+            if (tagCache.current) {
+                setTagLib(tagCache.current);
+            }
+            setIsLoading(true);
+            
+            try {
+                const response = await fetch(tagJSONLocation)
+                if (!response.ok) {
+                    throw new Error('failed to get json')
+                }
+                const tagsData = await response.json()
+                tagCache.current = tagsData;
+                setTagLib(tagsData) 
+                const data = await fetchCircleData({name: fix_YandS});
+                cache.current.set(fix_YandS, data);
+                setCircles(data.items);
+            } catch (error) {
+                console.error(`Error fetching data with Error: ${error}`);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadCircles();  
+    },[yearAndSeason]);
+
+
+}
+
