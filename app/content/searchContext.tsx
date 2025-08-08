@@ -8,9 +8,8 @@ interface SearchContextType {
     categoryOptions: string[];
 }
 
-
 const SearchContext = React.createContext<SearchContextType | undefined>(undefined);
-const categoryOptions = ['All', 'Name', 'Tag', 'Description', 'ID']
+const categoryOptions = ['All', 'Name', 'Tag', 'Description']
 
 export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [searchTerm, setSearchTerm] = React.useState<string>('');

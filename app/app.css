@@ -3,6 +3,8 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --breakpoint-lg: 100rem;
+  --breakpoint-2xl: 144rem;
 }
 
 html,

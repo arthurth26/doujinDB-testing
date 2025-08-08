@@ -2,7 +2,8 @@ import type { Route } from "./+types/home";
 import {ContentList} from "../content/content";
 import Navbar from "~/navbar/navbar";
 import { SearchProvider } from "~/content/searchContext";
-import {TimeOfM3Provider} from "~/content/timeOfM3Conext";
+import { TimeOfM3Provider } from "~/content/timeOfM3Conext";
+import { IsModalOpenProvider } from "~/content/modalContext";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,8 +17,10 @@ export default function Home() {
     <div>
       <SearchProvider>
         <TimeOfM3Provider>
-          <Navbar/>
-          <ContentList/>  
+          <IsModalOpenProvider>
+            <Navbar/>
+            <ContentList/>  
+          </IsModalOpenProvider>
         </TimeOfM3Provider>
       </SearchProvider>
     </div>

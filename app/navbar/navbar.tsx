@@ -1,15 +1,24 @@
 import React from 'react';
 import { useYearAndSeason } from '~/content/timeOfM3Conext';
 import { useSearch } from '~/content/searchContext';
+import { useIsModalOpen } from '~/content/modalContext';
+import { Discovery } from '~/content/discovery';
+
+interface ModalProps {
+  isOpen: boolean;
+  isClose: () => void;
+  children: React.ReactNode;
+  isMobile: boolean;
+}
 
 const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
   {searchTerm:string,setSearchTerm: React.Dispatch<React.SetStateAction<string>>, tag:string, setTag:React.Dispatch<React.SetStateAction<string>>}) => {
     const [isSearchDropDownOpen, setIsSearchDropDownOpen] = React.useState<boolean>(false);
     const [searchTag, setSearchTag] = React.useState<string>('');
     const {categoryOptions} = useSearch();
+    const isMobile = window.innerWidth < 2200
 
     const searchDropDownRef = React.useRef<HTMLDivElement>(null)
-
 
     const toggleSearchDropDown = (e: React.MouseEvent) => {
       e.stopPropagation()
@@ -45,35 +54,35 @@ const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
     }
     
     return (
-          <div id="searchBar" className='flex items-center justify-between min-w-40 h-15 p-3 bg-gray-700 rounded-full lg:w-150'>
-            <input placeholder='Search...' onChange={handleSearchChange} value={searchTerm} className='bg-transparent text-gray-200 placeholder-gray-400 outline-none px-1 py-1 w-20 lg:w-150'/>
-          <div id="dropdown" className="relative flex-none" ref={searchDropDownRef}>
-              <button id="dropdown button" onClick={toggleSearchDropDown} className="flex justify-between items-between w-20 h-10 text-gray-200 bg-gray-600 px-4 py-2 rounded-full hover:bg-gray-500 lg:w-20"> 
-                {searchTag || categoryOptions[0]}
-              <svg
-              className="ml-2 h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-              >
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-                </svg>
-              </button>
-            {isSearchDropDownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5">
-                {categoryOptions.map((option, index) => (
-                  <button key={index} value={tag} onClick={() =>handleTagOption(option)} className='block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-amber-200 hover:text-gray-800 active:bg-amber-200'>
-                    {option}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+      <div id="searchBar" className='flex items-center justify-between min-w-40 max-w-fit h-15 p-3 bg-gray-700 rounded-full lg:w-150'>
+        <input placeholder='Search...' onChange={handleSearchChange} value={searchTerm} className='bg-transparent text-gray-200 placeholder-gray-400 outline-none px-1 py-1 max-w-40 lg:w-150'/>
+        <div id="dropdown" className="relative flex" ref={searchDropDownRef}>
+            <button id="dropdown button" onClick={toggleSearchDropDown} className="flex justify-between items-between min-w-20 h-10 text-sm text-gray-200 bg-gray-600 px-4 py-2 rounded-full hover:bg-gray-500 lg:min-w-20 lg:text-base"> 
+              {(isMobile && searchTag.length>3)? searchTag.slice(0,3): searchTag || categoryOptions[0]}
+            <svg
+            className="ml-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            >
+            <path
+              fillRule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
+              </svg>
+            </button>
+          {isSearchDropDownOpen && (
+            <div className="absolute top-full right-0 mt-2 min-w-20 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5">
+              {categoryOptions.map((option, index) => (
+                <button key={index} value={tag} onClick={() =>handleTagOption(option)} className='block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-amber-200 hover:text-gray-800 active:bg-amber-200'>
+                  {(isMobile && option.length > 4)? option.slice(0,5): option}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     )
 }
@@ -111,7 +120,7 @@ const TimeDropDownList = () => {
   
   return (
     <div id="YearAndSeaonDropdown" className='relative w-15 h-15 flex-none lg:w-40' ref={yearAndSeasonRef}>
-      <button onClick={toggleYearAndSeasonDropDown} className={isMobile? 'flex items-center p-1 justify-between w-full h-full rounded-full bg-gray-700 text-gray-200':'flex items-center justify-between w-full h-full text-gray-200 bg-gray-700 px-4 py-2 rounded-full hover:bg-gray-600'}>
+      <button onClick={toggleYearAndSeasonDropDown} className={isMobile? 'flex items-center p-1 justify-between w-full h-full rounded-2xl bg-gray-700 text-gray-200':'flex items-center justify-between w-full h-full text-gray-200 bg-gray-700 px-4 py-2 rounded-full hover:bg-gray-600'}>
         {isMobile? `${yearAndSeasonSetting.replace(' ', '').slice(2,5) || yearAndSeasonOptions[0].replace(' ', '').slice(2,5)}`: `${yearAndSeasonSetting || yearAndSeasonOptions[0]}`}
         <svg
         className="-mr-1 ml-2 h-5 w-5"
@@ -141,16 +150,67 @@ const TimeDropDownList = () => {
   )
 }
 
+const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, children }) => {
+  const ModalRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ModalRef.current && !ModalRef.current.contains(event.target as Node)) {
+        isClose();
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('click',handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isOpen,isClose])
+  
+  if (!isOpen) return null;
+
+  if (isMobile) {  
+    return (
+      <div className="flex flex-col fixed inset-5 z-50 items-center justify-center text-sm overflow-auto bg-white" ref={ModalRef}>
+        <div className="flex bg-white">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className='hover:bg-gray-500'>
+              <path d="M15 18L9 12L15 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          <button className='text-sm hover:cursor-pointer hover:text-gray-800 hover:bg-gray-500' onClick={isClose}>X</button>  
+        </div>
+        {children}
+      </div>  
+    );
+  } else {
+    return (
+      <div className="fixed inset-23 w-min-40 w-max-100 z-50 gap-4 bg-gray-100 rounded" ref={ModalRef}> 
+        <div className="border-b-2 border-gray-600 m-2">
+          <button className='p-1 rounded-md text-gray-800 text-3xl hover:cursor-pointer hover:text-gray-200 hover:bg-gray-300' onClick={isClose}>X</button>
+        </div>
+        <div className='grid grid-cols-2 gap-4 m-2 '>
+          {children}
+        </div>
+      </div>  
+    );
+  }
+};
+
 export default function Navbar() {
-  const {searchTerm, setSearchTerm, category, setCategory} = useSearch()
+  const {searchTerm, setSearchTerm, category, setCategory} = useSearch();
+  const {isModalOpen, setIsModalOpen} = useIsModalOpen();
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   const isMobile = window.innerWidth < 1024
 
   return (
-    <div id="container" className='flex items-center justify-between p-1 h-20 w-full gap-2 bg-blue-900 fixed z-10 lg:p-4 '>
+    <div id="container" className='flex items-center justify-between p-1 h-20 w-full gap-2 bg-blue-900 fixed z-10'>
       <TimeDropDownList />
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} tag={category} setTag={setCategory}/>
       <div id="discovery" className='flex h-15'>
-        <button className='flex flex-row items-center rounded-3xl border p-2 hover:bg-amber-200 hover:text-gray-800 hover:ring-2 active:bg-amber-200'>
+        <button onClick={openModal} className='flex flex-row items-center rounded-3xl border p-2 bg-gray-700 hover:bg-gray-500 hover:text-gray-800 hover:ring-2 active:bg-amber-200'>
           <svg fill="#000000" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"  
               width={isMobile? "15px":'30px'} height={isMobile? "15px":'30px'} viewBox="0 0 256 159" >
             <path d="M116.1,2.3c18.5,0,33.5,15,33.5,33.5s-15,33.5-33.5,33.5s-33.5-15-33.5-33.5S97.6,2.3,116.1,2.3z M242.9,60.3
@@ -163,6 +223,12 @@ export default function Navbar() {
             </svg>
             {isMobile? '': <span className='pl-2'>Discovery</span>}
         </button>
+        <Modal isMobile={isMobile} isOpen={isModalOpen} isClose={closeModal} >
+            <Discovery/>
+          <div>
+            <p>wtuffejfaowjfaewoijf</p>
+          </div>
+        </Modal>
       </div>
     </div>
     )

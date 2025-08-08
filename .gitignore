@@ -4,4 +4,9 @@
 # React Router
 /.react-router/
 /build/
-/scraper/
+/public/extract_data.tsx
+/public/tags.csv
+
+/discovery-discover-find-investigate-svgrepo-com.svg
+/internet-3-svgrepo-com.svg
+/public/*.csv
