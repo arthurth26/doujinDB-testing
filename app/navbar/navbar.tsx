@@ -2,7 +2,7 @@ import React from 'react';
 import { useYearAndSeason } from '~/content/timeOfM3Conext';
 import { useSearch } from '~/content/searchContext';
 import { useIsModalOpen } from '~/content/modalContext';
-import { Discovery, ShowDiscoveryResults, TagsProvider } from '~/content/discovery';
+import { Discovery, ShowDiscoveryResults } from '~/content/discovery';
 
 interface ModalProps {
   isOpen: boolean;

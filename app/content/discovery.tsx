@@ -2,6 +2,7 @@ import React from "react";
 import { useYearAndSeason } from "./timeOfM3Conext";
 import { URLhandler,fetchCircleData } from"../content/content";
 import { useCacheContext } from "./cacheContext";
+import { useTags } from "./discoveryContext";
 
 interface tagDetails {
     jpTag: string
@@ -13,22 +14,6 @@ interface tagLib {
     tags: tagDetails[]
 }
 
-interface tagCategories {
-    Genres: string[]
-    Vocals: string[]
-    Instruments: string[]
-    ACGs: string[]
-    Themes: string[]
-}
-
-interface tagsContext {
-    selectedTags: string[];
-    setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>;
-    selectedYearAndSeasonOption: string[];
-    setSelectedYearAndSeasonOption: React.Dispatch<React.SetStateAction<string[]>>;
-    customTags: string[];
-    setCustomTags: React.Dispatch<React.SetStateAction<string[]>>;
-}
 
 interface externalLinks {
     url: string,
@@ -66,45 +51,50 @@ interface listCircleData {
     items: circleData[]
 }
 
-const tagsContext = React.createContext<tagsContext | undefined>(undefined);
+function debounce<T extends (...args: any[])=> void>(func: T, wait: number) {
+    let timeout: ReturnType<typeof setTimeout> | null = null
 
-const tagC:tagCategories = {
-    'Genres': ['Rock', 'R&B', 'Metal', 'Progressive', 'lofi', 'Pop', 'Electronic', 'Hi-Tech', 'Techno', 'Dub', 'Funk', 'Harcore', 'BreakCore', 'SpeedCore', 'Other Cores' ],
-    'Vocals': ['Synthesizer V', 'Male', 'Female', 'Vocaloid', 'Synthsized voice', 'UTAU'],
-    'Instruments' : ['Guitar', 'Piano', 'Flute', 'Saxophone', 'Drums', 'Synthesizer'],
-    'ACGs': ['Touhou', 'Blue Archive', 'Kirby', 'Jubeat', 'Ani-song','Undertale', 'Megami Tensei', 'IDOL@Master','Uma Musume','Splatoon','STG'],
-    'Themes': ['Adventure', 'Melancholy', 'Healing', 'Story', 'Romentic', 'Dark', 'Gothic', 'Nostalgic','RPG','Battle','Love', 'Rave','Scary','Boy','Girl', 'Dance']
+    return (...args:Parameters<T>) => {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(()=> func(...args), wait)
+    }
 }
 
-export const TagsProvider: React.FC<{children:React.ReactNode}> = ({children}) => {
-    const {yearAndSeasonOptions} = useYearAndSeason()
-    const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
-    // add checks later if needed for initial state
-    const [selectedYearAndSeasonOption, setSelectedYearAndSeasonOption] = React.useState<string[]>([yearAndSeasonOptions[0]]);
-    const [customTags, setCustomTags] = React.useState<string[]>([]);
-
-    return (
-        <tagsContext.Provider value={{selectedTags,setSelectedTags, selectedYearAndSeasonOption, setSelectedYearAndSeasonOption, customTags, setCustomTags}}>
-            {children}
-        </tagsContext.Provider>
-    );
+export async function cacheM3Data (selectedYearAndSeasonOptions:string[], cache: Map<string,listCircleData>, setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, updateCache:(key:string, data:listCircleData)=>void): Promise<void> {
+    setIsLoading(true);
+    try {
+        const promises = selectedYearAndSeasonOptions.map(async (option)=> {
+            const key = option.replace(' ','').slice(0,5).toLowerCase();
+            if (!cache.has(key)) {
+                const data = await fetchCircleData({name:key})
+                updateCache(key, data)
+                return data
+            }
+        });
+        await Promise.all(promises)
+    } catch (error) {
+        console.error(`${error}`)
+    } finally {
+        setIsLoading(true)
+    }
 }
 
-export function useTags(): tagsContext {
-    const tagsContexts = React.useContext(tagsContext);
-
-    if (!tagsContexts) {
-        throw new Error('Wrong place to use useTags')
-    };
-    return tagsContexts;
-}
+const findUniques = (circles: [number, circleData, string][]) : [number, circleData, string][] => {
+    const Ids = new Set<number>();
+    return circles.filter(([score, circle, YnS]) => {
+        if (Ids.has(circle.id)) return false;
+        Ids.add(circle.id);
+        return true
+    });
+};
 
 export function Discovery( {isMobile}:{isMobile:boolean}) {
     const { yearAndSeasonOptions } = useYearAndSeason();
-    const { selectedTags, setSelectedTags, selectedYearAndSeasonOption, setSelectedYearAndSeasonOption, customTags, setCustomTags} = useTags();
-    const [isChecked,setIsChecked] = React.useState<boolean>(false)
-    const category = Object.keys(tagC)
-    const TagInCategory = Object.values(tagC)
+    const { selectedTags, setSelectedTags, selectedYearAndSeasonOption, setSelectedYearAndSeasonOption, setCustomTags, tagC} = useTags();
+    const [isChecked,setIsChecked] = React.useState<boolean>(false);
+    const [inputValue, setInputValue] = React.useState<string>('')
+    const category = Object.keys(tagC);
+    const TagInCategory = Object.values(tagC);
 
     const handleTagOnCheck = (tag: string, isChecked:boolean) => {
         setSelectedTags((prevTags) => {
@@ -112,12 +102,12 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                 if (!prevTags.includes(tag)) {
                     return [...prevTags, tag];
                 } 
-                return prevTags
+                return prevTags;
             } else {
-                return prevTags.filter((t) => t !== tag)
+                return prevTags.filter((t) => t !== tag);
             }
-        })
-    }
+        });
+    };
 
     const handleYandSOnCheck = (YnS: string, isChecked: boolean) => {
         setSelectedYearAndSeasonOption((choice) => {
@@ -130,20 +120,18 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                 return choice.filter((YS) => YS !== YnS);
             }
         });
-    }
+    };
 
     const handleCheckboxChange = (e:React.ChangeEvent<HTMLInputElement>) => {
-        setIsChecked(true)
-    }
+        setIsChecked(true);
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.split(',');
-        setCustomTags(value);
-        if (value.length !== 0) {
-            setIsChecked(true)
-        } else {
-            setIsChecked(false)
-        }
+        const value = e.target.value;
+        setInputValue(value);
+        const tags = value.split(',').map((t) => t.trim()).filter((t)=> t);
+        setCustomTags([...tags.map((tag)=> tag.toLowerCase())]);
+        setIsChecked(tags.length > 0);
     }
 
     return (
@@ -203,11 +191,11 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                     <label className="inline-flex items-center cursor-pointer p-1 pl-0">
                         <input
                         type="checkbox"
-                        checked={selectedTags.includes('First time')}
-                        onChange={(e) => handleTagOnCheck('First time',e.target.checked)}
+                        checked={selectedTags.includes('First time participating')}
+                        onChange={(e) => handleTagOnCheck('First time participating',e.target.checked)}
                         className='hidden'
                         />
-                        <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes('First time')? 'border bg-gray-300 text-gray-700':'border bg-gray-800  hover:bg-gray-500 text-gray-200'}`}>First time</span>
+                        <span className={`px-4 py-2 rounded trainsition-colors duration-300 ${selectedTags.includes('First time participating')? 'border bg-gray-300 text-gray-700':'border bg-gray-800  hover:bg-gray-500 text-gray-200'}`}>First time participating</span>
                     </label>
                 </div>
             </div>
@@ -215,81 +203,40 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                 <label>
                     <span className="p-2">Custom Tags?</span>
                     <input type="checkbox" id="custom-tags-checkbox" checked={isChecked} onChange={handleCheckboxChange}/>
-                    <input placeholder="e.g. harcore, rock (separate multiple tags by comma)" className="text-sm p-2 m-2 border rounded-sm w-95/100" onChange={handleInputChange} value={customTags}/>
+                    <div>
+                        <input placeholder="e.g. harcore, rock (separate multiple tags by comma)" className="text-sm p-2 m-2 border rounded-sm w-95/100" onChange={handleInputChange} value={inputValue}/>
+                         {calculateCircleScore().isLoading && (
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+                        </div>
+                        )}
+                    </div>
+                    
                 </label>
             </div>
         </div>
     )
 }
 
-export async function cacheM3Data (selectedYearAndSeasonOptions:string[], cache: Map<string,listCircleData>, setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, updateCache:(key:string, data:listCircleData)=>void): Promise<void> {
-    setIsLoading(true);
-    try {
-        const promises = selectedYearAndSeasonOptions.map(async (option)=> {
-            const key = option.replace(' ','').slice(0,5).toLowerCase();
-            if (!cache.has(key)) {
-                const data = await fetchCircleData({name:key})
-                updateCache(key, data)
-                return data
-            }
-        });
-        await Promise.all(promises)
-    } catch (error) {
-        console.error(`${error}`)
-    } finally {
-        setIsLoading(true)
-    }
-}
-
-const filterResults = (listCircleData: listCircleData | undefined, targetTags:string[]): circleData[] => {
-    if (!listCircleData?.items || targetTags.length === 0) {
-        return [];
-    }
-
-    return listCircleData.items.filter((circle) =>
-        circle.keywords.some((keyword) => targetTags.some((tag) => keyword.trText.toLowerCase().includes(tag.toLowerCase()))) || targetTags.some((tag)=> circle.prText.toLowerCase().includes(tag.toLowerCase())
-    ));
-};
-
-const findUniques = (circles: [number, circleData, string][]) : [number, circleData, string][] => {
-    const Ids = new Set<number>();
-    return circles.filter(([score, circle, YnS]) => {
-        if (Ids.has(circle.id)) return false;
-        Ids.add(circle.id);
-        return true
-    });
-};
-
-const calcScore = (circle:circleData, targetTags: string[]):number => {
-    let score = circle.keywords.map((keyword) => targetTags.some((tag) => keyword.trText.toLowerCase().includes(tag.toLowerCase()))).length ;
-
-    if (targetTags.some((tag) => circle.prText.toLowerCase().includes(tag.toLowerCase()))) {
-        score++;
-    };
-
-    if (Object.values(circle.links).some((link) => link.text.trim() !== '')) {
-        score++;
-    };
-
-    return score;
-}
-
-const sortScore = (a:[number,circleData,string],b:[number,circleData,string]): number => {
-    if (a[0] !== b[0]) {
-        return b[0] - a[0];
-    }
-
-    return a[1].id - b[1].id;
-}
-
 export function calculateCircleScore() {
     const {cache} = useCacheContext();
     const {selectedTags, selectedYearAndSeasonOption, customTags} = useTags();
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [searchTags, setSearchTags] = React.useState<string[]>([])
+
+    const debouncedSetSearchTags = React.useCallback( 
+        debounce((tags: string[]) => {
+            setSearchTags(tags);
+            setIsLoading(false);
+        }, 300), []
+    );
     
-    const targetedTags = React.useMemo(() => {
-        return [...selectedTags, ...customTags.map((t) => t.toLowerCase().trim())]
-    }, [selectedTags, customTags]);
+    React.useEffect(()=> {
+        setIsLoading(true);
+        debouncedSetSearchTags(customTags);
+    }, [customTags, debouncedSetSearchTags])
+
+    const targetedTags = [...selectedTags.map((tag) => tag.toLowerCase()), ...customTags]
 
     React.useEffect(() => {
         const checkCache = async () => {
@@ -312,26 +259,28 @@ export function calculateCircleScore() {
             const data = cache.get(fix_YnS);
 
             if (data && targetedTags.length ) {
+
                 data.items.forEach((circle) => {
                     let score = 0;
                     const tagSet = new Set(targetedTags);
 
                     circle.keywords.forEach((keyword)=> {
                         const lowertext = keyword.text.toLowerCase();
-                        const lowerTrText = keyword.trText.toLowerCase();
+                        const lowerTrText = keyword.trText.toLowerCase().trim();
 
                         if (tagSet.has(lowertext) || tagSet.has(lowerTrText)){
                             score += 1;
                         }
-                        else {tagSet.forEach((tag) => {
+                        tagSet.forEach((tag) => {
                             if (circle.prText.toLowerCase().includes(tag)){
                                 score += 1;
                             };
+                        });
+                        if (score > 1) {
                             if (Object.values(circle.links).map((link)=> link.url!=='').length === 0) {
                                 score +=1;
                             };
-                        });
-                    };   
+                        }
                 })
 
                 if (score>0) {
@@ -364,7 +313,7 @@ function DiscoveryContent({circle,yearAndSeason,isMobile}:{circle:circleData, ye
     
     return (
         <li>
-            <div id="circleContentContainer">
+            <div id="circleContentContainer" className="flex flex-col text-gray-800 rounded-sm max-h-10/10 overflow-y-auto">
                 <h2>{parseInt(yearAndSeason.slice(0,4)) < 2025? `[${circle.realSp?.area? circle.realSp?.area:circle.webSp?.area}-${circle.realSp?.no? circle.realSp?.no:circle.webSp?.no}]`:`[${circle.area}-${circle.number}]`} {circle.name}</h2>
                 <div id="picContainer">
                     <img src={imgURL()} alt={circle.name} width='150' height='150' className="rounded-xl"/>
