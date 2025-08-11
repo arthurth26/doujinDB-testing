@@ -1,10 +1,30 @@
 import React from "react";
+import { cacheM3Data } from "./discovery";
 import { useYearAndSeason } from "./timeOfM3Conext";
 import { useSearch } from "./searchContext";
 import { useIsModalOpen } from "./modalContext";
+import { useCacheContext } from "./cacheContext";
+
 
 interface listCircleData {
     items: circleData[]
+}
+
+interface circleData {
+    id: number,
+    name: string,
+    phonetic: string,
+    genre: string,
+    spacesize: number,
+    adult: boolean,
+    prText: string,
+    embeds: string[],
+    links: links,
+    keywords: editedKeywords[],
+    area?: string,
+    number?: string,
+    realSp?: {area: string, no: string}
+    webSp?: {area: string, no: string}
 }
 
 interface externalLinks {
@@ -21,21 +41,10 @@ interface keywords {
     phonetic: string,
 }
 
-interface circleData {
-    id: number,
-    name: string,
-    phonetic: string,
-    genre: string,
-    spacesize: number,
-    adult: boolean,
-    prText: string,
-    embeds: string[],
-    links: links,
-    keywords: keywords[],
-    area?: string,
-    number?: string,
-    realSp?: {area: string, no: string}
-    webSp?: {area: string, no: string}
+interface editedKeywords {
+    text: string
+    phonetic: string
+    trText: string
 }
 
 const circlePlaceholder:circleData = {
@@ -48,7 +57,7 @@ const circlePlaceholder:circleData = {
     prText: "placeholder",
     embeds: ["placeholder"],
     links: { placeholder: { url: 'placeholder', text: 'placeholder' } },
-    keywords:[{text: 'placeholder', phonetic:'placeholder'}],
+    keywords:[{text: 'placeholder', phonetic:'placeholder',trText:'placeholder '}],
     area: 'placeholder',
     number: 'placeholder',
 }
@@ -63,9 +72,9 @@ interface tagLib {
     tags: tagDetails[]
 }
 
-async function fetchCircleData({ name }: { name: string }): Promise<listCircleData> {
+export async function fetchCircleData({ name }: { name: string }): Promise<listCircleData> {
     try {
-        const response = await fetch(`/${name}_circles.json`);
+        const response = await fetch(`/${name}_circles_edited.json`);
 
         if (!response.ok) {
             throw new Error('Cant read from file');
@@ -303,7 +312,6 @@ export const CircleContent = function CircleContent({circle, yearAndSeason}: {ci
                                                         </div>
                                                     </li>
                                                 }
-                                                
                                             </a>
                                         )
                                     } 
@@ -340,31 +348,29 @@ export function ContentList() {
     const [displayedCircles, setDisplayedCircles] = React.useState<circleData[]>([]);
     const [currentPage, setCurrentPage] = React.useState<number>(1);
     const [isLoading, setIsLoading] = React.useState<boolean>(true); 
-    const { yearAndSeason } = useYearAndSeason();
+    const {cache, updateCache} = useCacheContext()
+    const { yearAndSeason, yearAndSeasonOptions } = useYearAndSeason();
     const { searchTerm, category } = useSearch();
     const {isModalOpen} = useIsModalOpen()
     const itemsPerPage = 24;
     const observerRef = React.useRef<HTMLDivElement | null>(null);
-    const cache = React.useRef<Map<string, listCircleData>>((new Map()));
+
 
     React.useEffect(() => {
-        const fix_YandS = yearAndSeason.replace(" ","").slice(0,5).toLowerCase();
         const loadCircles = async () => {
-            if (cache.current.has(fix_YandS)) {
-                setCircles(cache.current.get(fix_YandS)!.items)
-                return;
+            setIsLoading(true)
+            const promises = yearAndSeasonOptions.map( async (YnS) => {
+                const fix_YnS = YnS.replace(' ', '').slice(0,5).toLowerCase();
+                await cacheM3Data([fix_YnS], cache, setIsLoading, updateCache);
+            });
+            await Promise.all(promises)
+
+            const fix_YnS = yearAndSeason.replace(' ', '').slice(0,5).toLocaleLowerCase();
+            const data = cache.get(fix_YnS);
+            if (data) {
+                setCircles(data.items)
             }
-            setIsLoading(true);
-            
-            try {
-                const data = await fetchCircleData({name: fix_YandS});
-                cache.current.set(fix_YandS, data);
-                setCircles(data.items);
-            } catch (error) {
-                console.error(`Error fetching data with Error: ${error}`);
-            } finally {
-                setIsLoading(false);
-            }
+            setIsLoading(false)
         };
 
         loadCircles();
@@ -465,48 +471,4 @@ export function ContentList() {
     )
 }
 
-function testingTags() {
-    const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [circles, setCircles] = React.useState<circleData[]>([circlePlaceholder]);
-    const [tagLib, setTagLib] = React.useState<tagLib>({'tags':[]});
-    const {yearAndSeason} = useYearAndSeason(); 
-    const tagCache = React.useRef<tagLib>({'tags':[]})
-    const cache = React.useRef<Map<string, listCircleData>>((new Map())); 
-    const tagJSONLocation = './tagLib.json'
-
-    React.useEffect(() => {
-        const fix_YandS = yearAndSeason.replace(" ","").slice(0,5).toLowerCase();
-        const loadCircles = async () => {
-            if (cache.current.has(fix_YandS)) {
-                setCircles(cache.current.get(fix_YandS)!.items)
-                return;
-            }
-            if (tagCache.current) {
-                setTagLib(tagCache.current);
-            }
-            setIsLoading(true);
-            
-            try {
-                const response = await fetch(tagJSONLocation)
-                if (!response.ok) {
-                    throw new Error('failed to get json')
-                }
-                const tagsData = await response.json()
-                tagCache.current = tagsData;
-                setTagLib(tagsData) 
-                const data = await fetchCircleData({name: fix_YandS});
-                cache.current.set(fix_YandS, data);
-                setCircles(data.items);
-            } catch (error) {
-                console.error(`Error fetching data with Error: ${error}`);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadCircles();  
-    },[yearAndSeason]);
-
-
-}
 

@@ -148,7 +148,7 @@ async function addEnTags() {
     const F2 = "./tags_english.csv";
     // The weird regex that you are seeing is the result from the fact that when you compare the JSON kataganas and the Csv kataganas due to hidden characters.
     // the starting points are not the same. You can check this by using console.log([...string].map((c)=> c.codePointAt(0)))
-    // Thus the use of regex to get rid of the starting difference to make sure that the strings have the same startpoint thus being the same
+    // Thus the use of regex to get rid of the starting difference to make sure that the strings have the same startpoint for comparison.
     let F1Text = readFileSync(F1,'utf-8').replace(/[\x00-\x1F\x7F-\x9F]/g, '').split(',');
     let F2Text = readFileSync(F2,'utf-8').replace(/[\x00-\x1F\x7F-\x9F]/g, '').split(',');
 
@@ -187,7 +187,8 @@ async function addEnTags() {
                 'webSp': data[k].webSp,
             })
         }
-        const jsonString = JSON.stringify(editedCircles,null,2);
+        const finalEditForJson = {'items': editedCircles}
+        const jsonString = JSON.stringify(finalEditForJson,null,2);
         writeFileSync(`./${yearAndSeasonOptions[i].toLowerCase().replace(' ','').slice(0,5)}_circles_edited.json`,jsonString)
     }
     

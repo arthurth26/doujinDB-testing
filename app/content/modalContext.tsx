@@ -21,7 +21,7 @@ export function useIsModalOpen(): modalContext {
     const context = React.useContext(isModalOpenContext);
 
     if (!context) {
-        throw new Error('Not using it in the right place')
+        throw new Error('Use under Provider please')
     } 
-    return context
+    return context;
 }

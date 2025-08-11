@@ -5,6 +5,7 @@ import { SearchProvider } from "~/content/searchContext";
 import { TimeOfM3Provider } from "~/content/timeOfM3Conext";
 import { IsModalOpenProvider } from "~/content/modalContext";
 import { TagsProvider } from "~/content/discovery";
+import { CacheContextProvider } from "~/content/cacheContext";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,16 +17,19 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   return (
     <div>
-      <SearchProvider>
-        <TimeOfM3Provider>
-          <IsModalOpenProvider>
-            <TagsProvider>
-              <Navbar/>
-              <ContentList/>  
-            </TagsProvider>
-          </IsModalOpenProvider>
-        </TimeOfM3Provider>
-      </SearchProvider>
+      <CacheContextProvider>
+        <SearchProvider>
+          <TimeOfM3Provider>
+            <IsModalOpenProvider>
+              <TagsProvider>
+                <Navbar/>
+                <ContentList/>  
+              </TagsProvider>
+            </IsModalOpenProvider>
+          </TimeOfM3Provider>
+        </SearchProvider>
+      </CacheContextProvider>
+      
     </div>
   );
 }

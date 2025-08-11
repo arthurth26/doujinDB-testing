@@ -2,7 +2,7 @@ import React from 'react';
 import { useYearAndSeason } from '~/content/timeOfM3Conext';
 import { useSearch } from '~/content/searchContext';
 import { useIsModalOpen } from '~/content/modalContext';
-import { Discovery } from '~/content/discovery';
+import { Discovery, ShowDiscoveryResults, TagsProvider } from '~/content/discovery';
 
 interface ModalProps {
   isOpen: boolean;
@@ -223,12 +223,19 @@ export default function Navbar() {
             </svg>
             {isMobile? '': <span className='pl-2'>Discovery</span>}
         </button>
+        {isMobile? <Modal isMobile={isMobile} isOpen={isModalOpen} isClose={closeModal}>
+            <Discovery isMobile={isMobile}/>
+        </Modal>:
+
         <Modal isMobile={isMobile} isOpen={isModalOpen} isClose={closeModal} >
             <Discovery isMobile={isMobile}/>
           <div>
-            <p>wtuffejfaowjfaewoijf</p>
+            <ShowDiscoveryResults isMobile={isMobile} />
           </div>
         </Modal>
+        
+        }
+        
       </div>
     </div>
     )
