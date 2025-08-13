@@ -10,8 +10,6 @@ interface tagCategories {
     Themes: string[]
 }
 
-
-
 interface tagsContext {
     selectedTags: string[]
     setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>
@@ -22,14 +20,13 @@ interface tagsContext {
     tagC: tagCategories
 }
 
-
 const tagsContext = React.createContext<tagsContext | undefined>(undefined);
 
 const tagC:tagCategories = {
-    'Genres': ['Rock', 'R&B', 'Metal', 'Progressive', 'lofi', 'Pop', 'Electronic', 'Hi-Tech', 'Techno', 'Dub', 'Funk', 'Harcore', 'BreakCore', 'SpeedCore', 'Other Cores' ],
+    'Genres': ['Rock', 'R&B', 'Metal', 'Progressive', 'Lo-Fi', 'Pop', 'Electronic', 'Hi-Tech', 'Techno', 'Dub', 'Funk', 'Hardcore', 'BreakCore', 'SpeedCore', 'Any Cores','Jazz', '8bit'],
     'Vocals': ['Synthesizer V', 'Male', 'Female', 'Vocaloid', 'Synthsized voice', 'UTAU'],
     'Instruments' : ['Guitar', 'Piano', 'Flute', 'Saxophone', 'Drums', 'Synthesizer'],
-    'ACGs': ['Touhou', 'Blue Archive', 'Kirby', 'Jubeat', 'Ani-song','Undertale', 'Megami Tensei', 'IDOL@Master','Uma Musume','Splatoon','STG'],
+    'ACGs': ['Touhou', 'Blue Archive', 'Kirby', 'Jubeat', 'Anime','Undertale', 'Megami Tensei', 'iDOLM@STER','Uma Musume','Splatoon','STG'],
     'Themes': ['Adventure', 'Melancholy', 'Healing', 'Story', 'Romentic', 'Dark', 'Gothic', 'Nostalgic','RPG','Battle','Love', 'Rave','Scary','Boy','Girl', 'Dance']
 }
 

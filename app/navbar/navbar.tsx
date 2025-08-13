@@ -16,7 +16,7 @@ const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
     const [isSearchDropDownOpen, setIsSearchDropDownOpen] = React.useState<boolean>(false);
     const [searchTag, setSearchTag] = React.useState<string>('');
     const {categoryOptions} = useSearch();
-    const isMobile = window.innerWidth < 2200
+    const isMobile = window.innerWidth < 1500
 
     const searchDropDownRef = React.useRef<HTMLDivElement>(null)
 
@@ -54,8 +54,8 @@ const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
     }
     
     return (
-      <div id="searchBar" className='flex items-center justify-between min-w-40 max-w-fit h-15 p-3 bg-gray-700 rounded-full lg:w-150'>
-        <input placeholder='Search...' onChange={handleSearchChange} value={searchTerm} className='bg-transparent text-gray-200 placeholder-gray-400 outline-none px-1 py-1 max-w-40 lg:w-150'/>
+      <div id="searchBar" className='flex items-center justify-between min-w-40 max-w-60 h-15 p-3 bg-gray-700 rounded-full lg:min-w-200'>
+        <input placeholder='Search...' onChange={handleSearchChange} value={searchTerm} className={`bg-transparent text-gray-200 placeholder-gray-400 outline-none px-1 py-1 h-full ${isMobile? 'w-6/13': 'w-full'}`}/>
         <div id="dropdown" className="relative flex" ref={searchDropDownRef}>
             <button id="dropdown button" onClick={toggleSearchDropDown} className="flex justify-between items-between min-w-20 h-10 text-sm text-gray-200 bg-gray-600 px-4 py-2 rounded-full hover:bg-gray-500 lg:min-w-20 lg:text-base"> 
               {(isMobile && searchTag.length>3)? searchTag.slice(0,3): searchTag || categoryOptions[0]}
@@ -184,7 +184,7 @@ const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, children }) =>
     );
   } else {
     return (
-      <div className="fixed inset-23 w-min-40 w-max-100 z-50 gap-4 bg-gray-100 rounded" ref={ModalRef}> 
+      <div className="fixed inset-23 w-min-40 w-max-100 h-270 z-50 gap-4 bg-gray-100 rounded" ref={ModalRef}> 
         <div className="border-b-2 border-gray-600 m-2">
           <button className='p-1 rounded-md text-gray-800 text-3xl hover:cursor-pointer hover:text-gray-200 hover:bg-gray-300' onClick={isClose}>X</button>
         </div>
@@ -233,7 +233,6 @@ export default function Navbar() {
             <ShowDiscoveryResults isMobile={isMobile} />
           </div>
         </Modal>
-        
         }
         
       </div>
