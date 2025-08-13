@@ -794,7 +794,7 @@ export function ShowDiscoveryResults({isMobile}:{isMobile:boolean}) {
     }
 
     return (
-        <div className="border rounded-sm top-0 border-black bg-white w-[831px] h-250">
+        <div className="border rounded-sm top-0 border-black bg-white h-250">
             <ul className="flex flex-col gap-2 overflow-y-auto max-h-250 w-full" >
                 {displayedCircles.length===0? <p className="text-black m-2">No results found</p>:
                 displayedCircles.map(([score, circle, YnS]) => (
