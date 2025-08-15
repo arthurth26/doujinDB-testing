@@ -746,7 +746,7 @@ export function ShowDiscoveryResults({isMobile}:{isMobile:boolean}) {
                 selectedYearAndSeasonOption.map((YnS) => (
                     <div key={YnS}>
                         <ul className="flex flex-col gap-2">
-                        <li className="text-black border-b-2 text-xl sticky top-0 bg-white z-10"><h3 >{YnS}</h3></li>
+                        <li className="text-black border-b-2 text-xl sticky top-0 bg-white z-10 ml-2"><h3 >{YnS}</h3></li>
                             {displayedCircles.map(([score, circle, YnS]) => (
                                 <DiscoveryContent key={circle.id} circle={circle} yearAndSeason={YnS.replace(" ","").slice(0,5).toLowerCase()} isMobile={isMobile}/>
                                     )
