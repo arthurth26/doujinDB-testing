@@ -231,7 +231,7 @@ export default function Navbar() {
   const isMobile = window.innerWidth < 1024
 
   return (
-    <div id="container" className='flex items-center justify-between p-1 h-20 w-full gap-2 bg-blue-900 fixed z-10'>
+    <div id="container" className='flex items-center justify-around p-1 h-20 w-full gap-2 bg-blue-900 fixed z-10'>
       <TimeDropDownList />
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} tag={category} setTag={setCategory}/>
       <div id="discovery" className='flex h-15'>
