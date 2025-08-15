@@ -7,8 +7,11 @@ import { Discovery, ShowDiscoveryResults } from '~/content/discovery';
 interface ModalProps {
   isOpen: boolean;
   isClose: () => void;
+  onSubmit: () => void;
+  onBack: () => void;
   children: React.ReactNode;
   isMobile: boolean;
+  submission: boolean;
 }
 
 const SearchBar = ({searchTerm, setSearchTerm, tag, setTag}:
@@ -150,8 +153,10 @@ const TimeDropDownList = () => {
   )
 }
 
-const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, children }) => {
+const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, onSubmit, onBack, submission, children }) => {
   const ModalRef = React.useRef<HTMLDivElement>(null)
+  const modalWidth = window.innerWidth - 40
+  const modalheight = window.innerHeight - 40
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -172,15 +177,26 @@ const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, children }) =>
 
   if (isMobile) {  
     return (
-      <div className="flex flex-col fixed inset-5 z-50 text-sm overflow-auto bg-white" ref={ModalRef}>
-        <div className="justify-start ml-2 mb-1 mt-1 bg-white">
-            {/* <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className='hover:bg-gray-500'>
-              <path d="M15 18L9 12L15 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg> */}
-          <button className='text-sm hover:cursor-pointer text-gray-800 hover:text-gray-800 hover:bg-gray-500' onClick={isClose}>X</button>  
-        </div>
-        {children}
-      </div>  
+      <div className={`flex flex-col fixed inset-5 text-sm bg-white h-[${modalheight}px ]`} ref={ModalRef}>
+          {submission? 
+            <div className={`sticky top-1.5 flex flex-row m-2 border-b-2 w-${modalWidth} border-gray-600`}>
+              <button onClick={onBack} className='hover:cursor-pointer hover:bg-gray-500'>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className='hover:bg-gray-500'>
+                <path d="M15 18L9 12L15 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            </div>
+            : 
+            <div className={`sticky top-1.5 p-1 pt-1.5 flex flex-row justify-between m-1 w-${modalWidth} h-[317px] bg-white border-b-2 border-black m-2`}>
+              <button className='text-2xl hover:cursor-pointer text-gray-800 hover:text-gray-800 hover:bg-gray-500' onClick={isClose}>X</button>  
+              <button onClick={onSubmit} className='bg-blue-600 text-base hover:bg-blue-300 hover:cursor-pointer text-gray-300 rounded p-2'>Submit</button>
+            </div>
+          }
+          <div>
+            {children}
+          </div>
+          
+      </div>
     );
   } else {
     return (
@@ -188,7 +204,7 @@ const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, children }) =>
         <div className="border-b-2 border-gray-600 m-2">
           <button className='p-1 rounded-md text-gray-800 text-3xl hover:cursor-pointer hover:text-gray-200 hover:bg-gray-300' onClick={isClose}>X</button>
         </div>
-        <div className='grid grid-cols-2 gap-4 m-2 '>
+        <div className='grid grid-cols-2 gap-4 m-2'>
           {children}
         </div>
       </div>  
@@ -199,6 +215,15 @@ const Modal: React.FC<ModalProps> = ({ isMobile, isOpen, isClose, children }) =>
 export default function Navbar() {
   const {searchTerm, setSearchTerm, category, setCategory} = useSearch();
   const {isModalOpen, setIsModalOpen} = useIsModalOpen();
+  const [submission, setSubmission] = React.useState<boolean>(false)
+
+  const handleSubmit = () => {
+    setSubmission(true);
+  }
+
+  const handleBacking = () => {
+    setSubmission(false);
+  }
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -223,18 +248,16 @@ export default function Navbar() {
             </svg>
             {isMobile? '': <span className='pl-2'>Discovery</span>}
         </button>
-        {isMobile? <Modal isMobile={isMobile} isOpen={isModalOpen} isClose={closeModal}>
-            <Discovery isMobile={isMobile}/>
+        {isMobile? <Modal isMobile={isMobile} isOpen={isModalOpen}  onSubmit={handleSubmit} onBack={handleBacking} submission={submission} isClose={closeModal}>
+            {submission? <ShowDiscoveryResults isMobile={isMobile}/> : <Discovery isMobile={isMobile}/>}
         </Modal>:
-
-        <Modal isMobile={isMobile} isOpen={isModalOpen} isClose={closeModal} >
+        <Modal isMobile={isMobile} isOpen={isModalOpen} onSubmit={handleSubmit} onBack={handleBacking} submission={submission} isClose={closeModal} >
             <Discovery isMobile={isMobile}/>
           <div>
             <ShowDiscoveryResults isMobile={isMobile} />
           </div>
         </Modal>
         }
-        
       </div>
     </div>
     )

@@ -24,8 +24,8 @@ const tagsContext = React.createContext<tagsContext | undefined>(undefined);
 
 const tagC:tagCategories = {
     'Genres': ['Rock', 'R&B', 'Metal', 'Progressive', 'Lo-Fi', 'Pop', 'Electronic', 'Hi-Tech', 'Techno', 'Dub', 'Funk', 'Hardcore', 'BreakCore', 'SpeedCore', 'Any Cores','Jazz', '8bit'],
-    'Vocals': ['Synthesizer V', 'Male', 'Female', 'Vocaloid', 'Synthsized voice', 'UTAU'],
-    'Instruments' : ['Guitar', 'Piano', 'Flute', 'Saxophone', 'Drums', 'Synthesizer'],
+    'Vocals': ['Synthesizer V', 'Male', 'Female', 'Vocaloid', 'UTAU'],
+    'Instruments' : ['Guitar', 'Piano', 'Flute', 'Saxophone', 'Drums'],
     'ACGs': ['Touhou', 'Blue Archive', 'Kirby', 'Jubeat', 'Anime','Undertale', 'Megami Tensei', 'iDOLM@STER','Uma Musume','Splatoon','STG'],
     'Themes': ['Adventure', 'Melancholy', 'Healing', 'Story', 'Romentic', 'Dark', 'Gothic', 'Nostalgic','RPG','Battle','Love', 'Rave','Scary','Boy','Girl', 'Dance']
 }

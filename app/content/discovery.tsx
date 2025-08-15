@@ -3,6 +3,7 @@ import { useYearAndSeason } from "./timeOfM3Conext";
 import { URLhandler,fetchCircleData } from"../content/content";
 import { useCacheContext } from "./cacheContext";
 import { useTags } from "./discoveryContext";
+const workerUrl = new URL('./workers/scoreWorker.ts', import.meta.url)
 
 interface tagDetails {
     jpTag: string
@@ -134,9 +135,9 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
     }
 
     return (
-        <div className={`flex flex-col text-gray-800 rounded-sm h-250 bg-white ${isMobile? '':'border'}`}>
+        <div className={`flex flex-col overflow-y-auto text-gray-800 rounded-sm bg-white ${isMobile? 'h-37/100':'border h-250'}`}>
             <div id="yearAndSeasonBox" className="flex flex-col gap-2 m-2">
-                <h3 className="border-b">Specific M3?</h3>
+                <h3 className={`border-b ${isMobile? 'text-xl':'text-base'}`}>Specific M3?</h3>
                 <div>
                     {yearAndSeasonOptions.map((option, index) => (
                         <label key={index} className="inline-flex items-center cursor-pointer p-1 pl-0">
@@ -156,7 +157,7 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
             { category.map((cat, index) => (
                 <div key={index} className="flex flex-col gap-2 m-2">
                     <div>
-                        <h3 className="border-b">{cat}</h3>
+                        <h3 className={`border-b ${isMobile? 'text-xl':'text-base'}`}>{cat}</h3>
                     </div>
                     <div className="">
                         {TagInCategory[index].sort().map((t:string,i:number) => (
@@ -175,7 +176,7 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
             ))}
             <div className="flex flex-col gap-2 m-2 pb-2">
                 <div>
-                    <h3 className="border-b">Unique</h3>
+                    <h3 className={`border-b ${isMobile? 'text-xl':'text-base'}`}>Unique</h3>
                 </div>
                 <div className="">
                     <label className="inline-flex items-center cursor-pointer p-1 pl-0">
@@ -210,145 +211,91 @@ export function Discovery( {isMobile}:{isMobile:boolean}) {
                         </div>
                         )}
                     </div>
-                    
                 </label>
             </div>
+            {isMobile? <button></button>:<></>}
         </div>
     )
+}
+
+function chunkArray<T>(array: T[], chunks: number): T[][] {
+    const result: T[][] = Array.from({length: chunks}, () => []);
+    array.forEach((item, index) => {
+        result[index % chunks].push(item);
+    });
+
+    return result.filter((group) => group.length > 0);
 }
 
 export function calculateCircleScore() {
     const {cache} = useCacheContext();
     const {selectedTags, selectedYearAndSeasonOption, customTags} = useTags();
+    const [scoreForEachCircle, setScoreForEachCircle] = React.useState<[number, circleData, string][]>([])
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [searchTags, setSearchTags] = React.useState<string[]>([])
-
-    const debouncedSetSearchTags = React.useCallback( 
-        debounce((tags: string[]) => {
-            setSearchTags(tags);
-            setIsLoading(false);
-        }, 300), []
-    );
-    
-    React.useEffect(()=> {
-        setIsLoading(true);
-        debouncedSetSearchTags(customTags);
-    }, [customTags, debouncedSetSearchTags])
+    const targetedTags = [...selectedTags.map((tag) => tag.toLowerCase()), ...customTags];
 
     React.useEffect(() => {
-        const checkCache = async () => {
-            const allCached = selectedYearAndSeasonOption.every((YnS) => {
-                const fix_YnS = YnS.replace(' ', '').slice(0,5).toLowerCase();
-                return cache.has(fix_YnS);
-            });
-            setIsLoading(!allCached);
+        if (selectedYearAndSeasonOption.length === 0 || targetedTags.length === 0) {
+            setScoreForEachCircle([]);
+            setIsLoading(false)
+            return
         }
-        checkCache();
-    }, [selectedYearAndSeasonOption])
 
-    const targetedTags = React.useMemo(
-        () => [...selectedTags.map((tag) => tag.toLowerCase()), ...customTags],
-        [selectedTags, customTags]
-    );
+    setIsLoading(true);
 
-    const scoreForEachCircle = React.useMemo(() => {
-        if (isLoading) return [];
+    const maxWorkers = 4;
+    const numWorkers = Math.min(selectedYearAndSeasonOption.length, maxWorkers);
+    const YnSGroups = chunkArray(selectedYearAndSeasonOption, numWorkers);
 
-        const results: [number, circleData, string][] = [];
-        selectedYearAndSeasonOption.forEach((YnS) => {
-            const fix_YandS = YnS.replace(" ", "").slice(0, 5).toLowerCase();
-            const data = cache.get(fix_YandS);
-            if (data) {
-                data.items.forEach((circle) => {
-                    let score = 0;
-                    const tagSet = new Set(targetedTags);
+    const workers: Worker[] = [];
+    const allResults: [number, circleData, string][] = [];
 
-                    circle.keywords.forEach((keyword) => {
-                        const lowerText = keyword.text.toLowerCase();
-                        const lowerTrText = keyword.trText.toLowerCase();
+    const promises = YnSGroups.map((group) => {
+        return new Promise<[number, circleData, string][]>((resolve) => {
+            const datasets = group.map((YnS) => {
+                const fix_YnS = YnS.replace(' ', '').slice(0,5).toLowerCase();
+                const data = cache.get(fix_YnS);
+                return {YearAndSeason: YnS, circles: data?.items || []};
+            });
 
-                        tagSet.forEach((tag) => {
-                        if (lowerText.includes(tag)) {
-                            score +=1;
-                        } else if (lowerTrText.includes(tag)) {
-                            score += 1;
-                        };
-                        if (circle.prText.toLowerCase().includes(tag)){
-                            score += 1;
-                        };
-                    });
-                        if (score > 1) {
-                            if (circle.links!) {
-                                score +=1;
-                            };
-                        };
-                        });
-
-                        if (score > 0) {
-                            results.push([score, circle, YnS]);
-                        }
-                });
+            if (datasets.every((ds) => ds.circles.length === 0)) {
+                resolve([]);
+                return;
             }
-        });
 
-        return findUniques(results.sort((a, b) => b[0] - a[0]));
-    }, [isLoading, selectedYearAndSeasonOption, targetedTags, cache]);
+            const worker = new Worker(new URL('./workers/scoreWorker.ts', import.meta.url), {type: 'module'});
+            workers.push(worker);
+
+            worker.onmessage = (event: MessageEvent<[number, circleData, string][]>) => {
+                resolve(event.data);
+                worker.terminate();
+            };
+
+            worker.onerror = (error) => {
+                console.error('Worker error:', error);
+                resolve([]);
+                worker.terminate();
+            };
+
+            worker.postMessage({targetedTags, datasets});
+        });
+    });
+
+    Promise.all(promises).then((resultArr) => {
+        resultArr.forEach((results) => allResults.push(...results));
+        allResults.sort((a,b) => b[0] - a[0]);
+        const uniqueResults = findUniques(allResults);
+
+        setScoreForEachCircle(uniqueResults);
+    }).catch((error) => console.error('Error processing scores:', error))
+    .finally(() => setIsLoading(false));
+
+    return () => {
+        workers.forEach((worker) => worker.terminate());
+    }}, [cache, selectedTags, selectedYearAndSeasonOption, customTags] )
 
     return { scoreForEachCircle, isLoading };
 }
-
-const scoreForEachCircle = ({isLoading, selectedYearAndSeasonOption, cache, targetedTags}: {isLoading:boolean, selectedYearAndSeasonOption:string[], cache:Map<string, listCircleData>, targetedTags:string[]}) => {
-    let fixTags = targetedTags.map((tag)=> tag.includes('any')? 'core':tag)
-    if (targetedTags.find((tag) => tag.includes('anime')) !== undefined) {
-        fixTags.push('anisong') 
-    }
-    if (isLoading) return [];
-
-    const results: [number, circleData, string][] = [];
-
-    selectedYearAndSeasonOption.forEach((YnS) => {
-        const fix_YnS = YnS.replace(' ', '').slice(0,5).toLowerCase();
-        const data = cache.get(fix_YnS);
-
-        if (data && targetedTags.length ) {
-
-            data.items.forEach((circle) => {
-                let score = 0;
-                const tagSet = new Set(fixTags);
-
-                circle.keywords.forEach((keyword)=> {
-                    const lowerText = keyword.text.toLowerCase();
-                    const lowerTrText = keyword.trText.toLowerCase().trim();
-
-                    tagSet.forEach((tag) => {
-                        if (lowerText.includes(tag)) {
-                            score +=1;
-                        } else if (lowerTrText.includes(tag)) {
-                            score += 1;
-                        };
-                        if (circle.prText.toLowerCase().includes(tag)){
-                            score += 1;
-                        };
-                    });
-                    if (score > 1) {
-                        if (circle.links!) {
-                            score +=1;
-                        };
-                    };
-            });
-            if (score>0) {
-                results.push([score, circle, YnS]);
-            }
-        });
-        } else {  
-            return [];
-        };
-    });
-    
-    const uniqueSortedCircles = findUniques(results.sort((a,b) => b[0]-a[0]))
-    return uniqueSortedCircles
-};
-
 
 function DiscoveryContent({circle,yearAndSeason,isMobile}:{circle:circleData, yearAndSeason:string,isMobile:boolean}) {
     const imgURL = () => {if (parseInt(yearAndSeason.slice(0,4)) < 2025) {
@@ -371,7 +318,7 @@ function DiscoveryContent({circle,yearAndSeason,isMobile}:{circle:circleData, ye
                     <img src={imgURL()} alt={circle.name} width='150' height='150' className="rounded-xl"/>
                 </div>
                 {circle.keywords.length > 0 && circle.keywords.some((keyword)=>keyword.text!)? 
-                    <div id="tagContainer" className="flex flex-col p-2 w-40 text-sm">
+                    <div id="tagContainer" className="flex flex-col p-2 w-45 text-sm">
                         {circle.keywords.map((tag, id) => (
                             <div key={id}>
                                 <p>{tag.text}</p>
@@ -794,14 +741,20 @@ export function ShowDiscoveryResults({isMobile}:{isMobile:boolean}) {
     }
 
     return (
-        <div className="border rounded-sm top-0 border-black bg-white h-250">
-            <ul className="flex flex-col gap-2 overflow-y-auto max-h-250 w-full" >
+        <div className="border rounded-sm top-0 border-black bg-white h-250 flex flex-col overflow-y-auto">
                 {displayedCircles.length===0? <p className="text-black m-2">No results found</p>:
-                displayedCircles.map(([score, circle, YnS]) => (
-                    <DiscoveryContent key={circle.id} circle={circle} yearAndSeason={YnS.replace(" ","").slice(0,5).toLowerCase()} isMobile={isMobile}/>
+                selectedYearAndSeasonOption.map((YnS) => (
+                    <div key={YnS}>
+                        <ul className="flex flex-col gap-2">
+                        <li className="text-black border-b-2 text-xl sticky top-0 bg-white z-10"><h3 >{YnS}</h3></li>
+                            {displayedCircles.map(([score, circle, YnS]) => (
+                                <DiscoveryContent key={circle.id} circle={circle} yearAndSeason={YnS.replace(" ","").slice(0,5).toLowerCase()} isMobile={isMobile}/>
+                                    )
+                                )}
+                        </ul>    
+                    </div>
                     )
                 )}
-            </ul>
             {displayedCircles.length < scoreForEachCircle.length && (<div ref={discoveryContentObserverRef} className="h-10"/>)}
         </div>
     )
